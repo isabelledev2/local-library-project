@@ -1,24 +1,25 @@
 function findAccountById(accounts, id) {
-  return accounts.find((account) => account.id.includes(id));
+  return accounts.find((temp) => temp.id.includes(id));
 }
 function sortAccountsByLastName(accounts) {
   return accounts.sort((lastA,lastB) => 
     lastA.name.last.toLowerCase() > lastB.name.last.toLowerCase() ? 1 : -1
   );
 }
+
 function getTotalNumberOfBorrows(account, books) {
-  let result = 0;
-  const booksBorrowedByAccount = books.forEach((book) => {
-    if (!!book.borrows) {
-      book.borrows.forEach((accounts) => {
-        if (accounts.id === account.id) {
-          result++;
-        }
-      });
-    }
-  });
-  return result;
+  const { id: accId } = account;
+
+  return books.reduce((accumulator, book) => {
+    return (
+      accumulator +
+      book.borrows
+        .filter(borrow => borrow.id === accId)
+        .reduce((accumulatorBorrows, borrow) => accumulatorBorrows + 1, 0)
+    );
+  }, 0);
 }
+
 function getBooksPossessedByAccount(account, books, authors) {
   const borrowedBooks = [];
   books.forEach((book) => {
